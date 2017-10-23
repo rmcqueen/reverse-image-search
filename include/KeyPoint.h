@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <math.h>
 
 using namespace std;
 
@@ -30,7 +31,7 @@ class KeyPoint {
     }
 };
 
-namespace hash {
+namespace std {
   template <>
   struct hash<KeyPoint> {
       std::size_t operator()(const KeyPoint &k) const {
