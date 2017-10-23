@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "KeyPoint.h"
-#include "img_hash_opencv_module/phash.hpp
+#include "img_hash_opencv_module/phash.hpp"
 
 using namespace std;
 
