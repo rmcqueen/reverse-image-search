@@ -41,7 +41,7 @@ class PerceptualHash {
    * @return
    */
   static std::string ConvertHashToString(vector<bool> hash) {
-    std::string ret = "";
+    std::string ret;
     int h = 0;
     for (unsigned int i = 0; i < hash.size(); i++) {
       if (hash[i]) {
@@ -89,8 +89,24 @@ class PerceptualHash {
     return MatHashToBoolArr(inHash);
   }
 
+  static cv::Mat ComputeHashMatrix(vector<cv::KeyPoint> &key_points) {
+    cv::Mat in_hash;
+    cv::Ptr<cv::img_hash::PHash> algorithm;
+    algorithm->compute(ConvertKeyPointsVectorToMat(key_points), in_hash);
+    return in_hash;
+  }
 
-  // TODO: Implement Hamming distance function
+
+  static int ComputeHashDistance(vector<bool> &first, vector<bool> &second) {
+    assert(first.size() == second.size());
+
+    int dist = 0;
+    for (unsigned int i = 0; i < first.size(); i++) {
+      dist += (first[i] != second[i]);
+    }
+
+    return dist;
+  }
 };
 
 }
