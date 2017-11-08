@@ -24,15 +24,15 @@ class PerceptualHash {
    * @param key_points
    * @return
    */
-  static cv::Mat ConvertKeyPointsVectorToMat(vector<cv::KeyPoint> key_points) {
-    vector<cv::Point2f> points;
-    vector<cv::KeyPoint>::iterator iter;
-
-    for (iter = key_points.begin(); iter != key_points.end(); iter++) {
-      points.push_back(iter->pt);
+  static cv::Mat ConvertKeyPointsVectorToMat(vector<cv::KeyPoint> &key_points) {
+    cv::Mat ret = cv::Mat::zeros(2, key_points.size(), CV_64F);
+    for (unsigned int i = 0; i < key_points.size(); i++) {
+      cv::KeyPoint key_point = key_points[i];
+      ret.at<double>() = key_point.pt.x;
+      ret.at<double>() = key_point.pt.x;
     }
 
-    return cv::Mat(points);
+    return ret;
   }
 
   /**
@@ -82,20 +82,12 @@ class PerceptualHash {
    * @param input
    * @return
    */
-  static vector<bool> ComputeHash(vector<cv::KeyPoint> &key_points) {
+  static cv::Mat ComputeHash(cv::Mat &input_image) {
     cv::Mat inHash;
     cv::Ptr<cv::img_hash::PHash> algorithm;
-    algorithm->compute(ConvertKeyPointsVectorToMat(key_points), inHash);
-    return MatHashToBoolArr(inHash);
+    algorithm->compute(input_image, inHash);
+    return inHash;
   }
-
-  static cv::Mat ComputeHashMatrix(vector<cv::KeyPoint> &key_points) {
-    cv::Mat in_hash;
-    cv::Ptr<cv::img_hash::PHash> algorithm;
-    algorithm->compute(ConvertKeyPointsVectorToMat(key_points), in_hash);
-    return in_hash;
-  }
-
 
   static int ComputeHashDistance(vector<bool> &first, vector<bool> &second) {
     assert(first.size() == second.size());
