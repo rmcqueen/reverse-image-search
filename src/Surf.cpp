@@ -92,27 +92,6 @@ vector<cv::Mat> get_multiple_feature_vectors(vector<string> &file_names, vector<
   return descriptors;
 }
 
-vector<cv::Mat> get_multiple_phash_feature_vectors(vector<string> &file_names, vector<IndicesMapping> &indices_mapping) {
-  vector<cv::Mat> descriptors;
-  int idx_row = 0;
-
-  for (int i = 0; i < file_names.size(); i++) {
-    cv::Mat image = cv::imread(file_names[i], CV_LOAD_IMAGE_GRAYSCALE);
-    vector<cv::KeyPoint> desc = get_key_points(image);
-    if (desc.size() < 1) {
-      continue;
-    }
-
-    cv::Mat hashed_desc = hashes::PerceptualHash::ComputeHashMatrix(desc);
-    descriptors.push_back(hashed_desc);
-    IndicesMapping mapping(file_names[i], idx_row, idx_row + hashed_desc.rows - 1, 0);
-    indices_mapping.push_back(mapping);
-    idx_row += hashed_desc.rows;
-  }
-
-  return descriptors;
-  }
-
 cv::Mat ConcatenateDescriptors(vector<cv::Mat> &descriptors) {
 
   /* TODO: Could probably pre-allocate the size of the matrix based on the dimensions labelled in descriptors.

@@ -12,11 +12,7 @@ vector<cv::KeyPoint> get_key_points(cv::Mat &input_image);
 
 cv::Mat get_single_feature_vector(cv::Mat &image, vector<cv::KeyPoint> &key_points);
 
-cv::Mat get_single_phash_feature_vector(cv::Mat &img);
-
 vector<cv::Mat> get_multiple_feature_vectors(vector<string> &file_names, vector<IndicesMapping> &indices_mapping);
-
-vector<cv::Mat> get_multiple_phash_feature_vectors(vector<string> &file_names, vector<IndicesMapping> &indices_mapping);
 
 cv::Mat ConcatenateDescriptors(vector<cv::Mat> &descriptors);
 #endif //REVERSE_IMAGE_SEARCH_SURF_H
