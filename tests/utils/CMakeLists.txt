@@ -1,0 +1,11 @@
+find_package(GTest REQUIRED)
+find_package( OpenCV )
+find_package( Boost COMPONENTS system filesystem REQUIRED)
+if (Boost_FOUND)
+    INCLUDE_DIRECTORIES( SYSTEM ${Boost_INCLUDE_DIR} )
+    ADD_DEFINITIONS( "-DHAS_BOOST" )
+endif()
+
+include_directories(${GTEST_INCLUDE_DIRS})
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(lib)
