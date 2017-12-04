@@ -1,4 +1,4 @@
 # reverse-image-search
-Utilizing SURF, phash, and KNN in order to find similar images to each other based on their hashed distances. This is currently a work in progress.
+Utilizing SURF, Bag of Visual Words, and a Support Vector Machine in order to identify similar images within the Caltech-256 data set.
 
-Inspired by https://github.com/pippy360/transformationInvariantImageSearch
+A functional product currently works, however, installation instructions, and further unit testing is currently in progress.
