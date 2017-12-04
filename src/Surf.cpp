@@ -1,4 +1,6 @@
 /**
+ * Surf.cpp
+ *
  * This class provides key point, and feature vector extraction from an image using the SURF algorithm in a convenient
  * way. Essentially reducing the required steps to get the provided methods
  */
@@ -8,8 +10,8 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/highgui.hpp>
-#include <IndicesMapping.h>
-#include <PerceptualHash.h>
+
+#include "utils.hpp"
 
 using namespace std;
 
@@ -34,8 +36,7 @@ vector<cv::KeyPoint> get_key_points(cv::Mat &input_image) {
  */
 cv::Mat get_single_feature_vector(cv::Mat &image, vector<cv::KeyPoint> &key_points) {
   int minHessian = 400; // Modify this as needed
-  cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
-  detector->setHessianThreshold(minHessian);
+  cv::Ptr<cv::FeatureDetector> detector = cv::xfeatures2d::SURF::create(minHessian);
 
   cv::Mat descriptors;
   detector->compute(image, key_points, descriptors);
@@ -50,19 +51,19 @@ cv::Mat get_single_feature_vector(cv::Mat &image, vector<cv::KeyPoint> &key_poin
  */
 cv::Mat get_single_feature_vector(string &file_name) {
   // Read in file
-  cv::Mat image = cv::imread(file_name, CV_LOAD_IMAGE_GRAYSCALE);
+  cv::Mat image = cv::imread(file_name);
+
   if (!image.data) {
-    return cv::Mat(0, 0, CV_8U);
+    return cv::Mat(0, 0, CV_64F);
   }
 
   int minHessian = 400;  // Modify this as needed
-  cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create(minHessian);
-
+  cv::Ptr<cv::DescriptorExtractor> extractor = cv::xfeatures2d::SURF::create(minHessian);
   // Get key points
   vector<cv::KeyPoint> key_points;
   cv::Mat descriptors;
 
-  detector->detectAndCompute(image, cv::Mat(), key_points, descriptors);
+  extractor->detectAndCompute(image, cv::Mat(), key_points, descriptors);
 
   return descriptors;
 }
@@ -75,28 +76,30 @@ cv::Mat get_single_feature_vector(string &file_name) {
  * @param indices_mapping vector<IndicesMapping> a matrix composed of relevant IndicesMapping objects for each image
  * @return vector<cv::Mat> a vector composed of each image's feature vector within a directory (vector of image matrices)
  */
-vector<cv::Mat> get_multiple_feature_vectors(vector<string> &file_names, vector<IndicesMapping> &indices_mapping) {
+vector<cv::Mat> get_multiple_feature_vectors(vector<string> &file_names) {
   vector<cv::Mat> descriptors;
-  int idx_row = 0;
+  cout << "Computing feature vectors..." << endl;
   for (string &file : file_names) {
+    string file_label = utils::Utility::get_image_label(file);
     cv::Mat desc = get_single_feature_vector(file);
     if (desc.rows < 1) {
       continue;
     }
 
     descriptors.push_back(desc);
-    IndicesMapping mapping(file, idx_row, idx_row + desc.rows - 1, 0);
-    indices_mapping.push_back(mapping);
-    idx_row += desc.rows;
   }
   return descriptors;
 }
 
+/**
+ * Given a vector<cv::Mat>, combine all of the elements into one singular matrix in order to create an index when searching
+ * for an image match
+ * @param descriptors
+ * @return
+ */
 cv::Mat ConcatenateDescriptors(vector<cv::Mat> &descriptors) {
 
-  /* TODO: Could probably pre-allocate the size of the matrix based on the dimensions labelled in descriptors.
-   * Caused a bug that made the matrix double in size, so be cautious.
-   */
+  // TODO: Could probably pre-allocate the size of the matrix based on the dimensions labelled in descriptors
   cv::Mat concatenated_descriptors;
 
   for (cv::Mat descriptor : descriptors) {

@@ -10,29 +10,30 @@ if (Boost_FOUND)
 endif()
 
 include_directories(include)
+include_directories(data)
+add_subdirectory(src)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories(lib)
-include_directories(test)
-
-
-set(IMAGE_HASH_FILES
-        include/img_hash_opencv_module/phash.cpp
-        include/img_hash_opencv_module/PHash_Fast.cpp)
+#add_subdirectory(tests)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-add_executable(reverse-image-search
-        include/PerceptualHash.h
-        include/Surf.h
-        include/utils.h
-        include/Image.h
-        include/IndicesMapping.h
+set(SOURCE_FILES src/main.cpp
         src/Surf.cpp
-        src/main.cpp
-        src/utils.cpp)
+        src/utils.cpp
+        include/Surf.hpp
+        include/utils.hpp
+        include/Vocabulary.hpp
+        include/Histogram.hpp
+        src/Histogram.cpp
+        src/Vocabulary.cpp
+        src/SVM.cpp
+        include/SVM.hpp)
 
-link_libraries(lib)
+add_executable(reverse-image-search ${SOURCE_FILES})
+
+link_libraries(core_lib)
+link_libraries(core)
 target_link_libraries(reverse-image-search ${OpenCV_LIBS} )
-target_link_libraries(reverse-image-search ${CMAKE_CURRENT_SOURCE_DIR}/lib/hiredis/libhiredis.a)
 target_link_libraries(reverse-image-search
         ${Boost_FILESYSTEM_LIBRARY}
         ${Boost_SYSTEM_LIBRARY})
